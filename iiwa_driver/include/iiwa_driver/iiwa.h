@@ -80,37 +80,14 @@ namespace iiwa_ros {
 
         void init(ros::NodeHandle& nh);
         void run();
-        bool initialized();
 
     protected:
         void _init();
-        void _ctrl_loop();
         void _load_params();
         void _read(ros::Duration elapsed_time);
         void _write(ros::Duration elapsed_time);
-        bool _init_fri();
         bool _connect_fri();
         void _disconnect_fri();
-        bool _read_fri(kuka::fri::ESessionState& current_state);
-        bool _write_fri();
-        void _publish();
-        void _on_fri_state_change(kuka::fri::ESessionState old_state, kuka::fri::ESessionState current_state) {}
-
-        // External torque publisher
-        realtime_tools::RealtimePublisher<iiwa_driver::AdditionalOutputs> _additional_pub;
-
-        // Interfaces
-        hardware_interface::JointStateInterface _joint_state_interface;
-        hardware_interface::PositionJointInterface _position_joint_interface;
-        hardware_interface::VelocityJointInterface _velocity_joint_interface;
-        hardware_interface::EffortJointInterface _effort_joint_interface;
-
-        joint_limits_interface::EffortJointSaturationInterface _effort_joint_saturation_interface;
-        joint_limits_interface::EffortJointSoftLimitsInterface _effort_joint_limits_interface;
-        joint_limits_interface::PositionJointSaturationInterface _position_joint_saturation_interface;
-        joint_limits_interface::PositionJointSoftLimitsInterface _position_joint_limits_interface;
-        joint_limits_interface::VelocityJointSaturationInterface _velocity_joint_saturation_interface;
-        joint_limits_interface::VelocityJointSoftLimitsInterface _velocity_joint_limits_interface;
 
         // Shared memory
         int _num_joints;
@@ -123,9 +100,6 @@ namespace iiwa_ros {
         std::vector<double> _joint_position_command;
         std::vector<double> _joint_velocity_command;
         std::vector<double> _joint_effort_command;
-
-        // Controller manager
-        std::shared_ptr<controller_manager::ControllerManager> _controller_manager;
 
         // FRI Connection
         kuka::fri::UdpConnection _fri_connection;

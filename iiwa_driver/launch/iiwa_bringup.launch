@@ -27,7 +27,7 @@
 <launch>
   <!-- Select the robot -->
   <arg name="robot_name" default="iiwa"/>
-  <arg name="model" default="14" />
+  <arg name="model" default="7" />
 
   <!-- Select the controller -->
   <arg name="controller" default="TorqueController"/>
@@ -49,8 +49,8 @@
   </node>
 
   <!-- Spawn controller -->
-  <include file="$(find iiwa_control)/launch/iiwa_control.launch">
+  <!-- <include file="$(find iiwa_control)/launch/iiwa_control.launch">
     <arg name="controller" value="$(arg controller)"/>
-  </include>
+  </include> -->
 
 </launch>
