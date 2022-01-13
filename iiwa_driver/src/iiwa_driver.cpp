@@ -44,10 +44,13 @@
 // ROS Headers
 #include <ros/ros.h>
 
+#include <thread>
+
 // FRI Headers
 #include <kuka/fri/LBRCommand.h>
 #include <kuka/fri/LBRState.h>
 #include <kuka/fri/UdpConnection.h>
+#include <kuka/fri/ClientData.h>
 
 namespace kuka {
 namespace fri {
@@ -83,9 +86,9 @@ public:
     if (_fri_connection.isOpen()) {
       _fri_connection.close();
     }
-    if (_fri_message_data) {
-      delete _fri_message_data;
-    }
+//    if (_fri_message_data) {
+//      delete _fri_message_data;
+//    }
   }
 
   void run(bool start_thread) {
@@ -114,7 +117,7 @@ private:
       ROS_ERROR("already connected");
       return false;
     }
-    return _fri_connection.open(_port, _remote_host.c_str());
+    return _fri_connection.open(30200, "192.170.10.2");
   }
 
   void control_loop() {
@@ -148,7 +151,7 @@ private:
       return;
     }
 
-    current_state = (kuka::fri::ESessionState)_fri_message_data->monitoringMsg.connectionInfo.sessionState;
+    current_state = (kuka::fri::ESessionState) _fri_message_data->monitoringMsg.connectionInfo.sessionState;
 
     if (_fri_message_data->lastState != current_state) {
       _fri_message_data->lastState = current_state;
@@ -169,7 +172,7 @@ private:
         return;
     }
 
-    for (int i = 0; i < _num_joints; i++) {
+    for (int i = 0; i < 7; i++) {
       _joint_position[i] = _robot_state.getMeasuredJointPosition()[i];
     }
   }
@@ -196,7 +199,8 @@ private:
       _fri_message_data->lastSendCounter = 0;
 
       _fri_message_data->commandMsg.header.sequenceCounter = _fri_message_data->sequenceCounter++;
-      _fri_message_data->commandMsg.header.reflectedSequenceCounter = _fri_message_data->monitoringMsg.header.sequenceCounter;
+      _fri_message_data->commandMsg.header.reflectedSequenceCounter =
+          _fri_message_data->monitoringMsg.header.sequenceCounter;
 
       if (!_fri_message_data->encoder.encode(_fri_message_data->sendBuffer, _message_size)) {
         ROS_ERROR("failed encoding");
@@ -224,18 +228,17 @@ private:
 } // namespace iiwa_ros
 
 
-int main(int argc, char** argv)
-{
-    ros::init(argc, argv, "iiwa_hardware_interface");
+int main(int argc, char** argv) {
+  ros::init(argc, argv, "iiwa_hardware_interface");
 
-    ros::NodeHandle nh;
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
+  ros::NodeHandle nh;
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
 
-    iiwa_ros::Iiwa iiwa();
-    iiwa.run(false);
+  iiwa_ros::Iiwa iiwa;
+  iiwa.run(false);
 
-    spinner.stop();
+  spinner.stop();
 
-    return 0;
+  return 0;
 }
