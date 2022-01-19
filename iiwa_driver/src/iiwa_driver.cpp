@@ -113,6 +113,7 @@ private:
     // set specific message IDs
     _fri_message_data->expectedMonitorMsgID = _robot_state.monitoring_message_id();
     _fri_message_data->commandMsg.header.messageIdentifier = _robot_command.command_message_id();
+    _joint_position.resize(7);
     if (_fri_connection.isOpen()) {
       ROS_ERROR("already connected");
       return false;
